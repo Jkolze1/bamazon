@@ -18,7 +18,7 @@ var connection = mysql.createConnection({
   });
 	
 
-// validateInput makes sure that the user is supplying only positive integers for their inputs
+// Positive integers only
 function validateInput(value) {
 	var integer = Number.isInteger(parseFloat(value));
 	var sign = Math.sign(value);
@@ -30,11 +30,11 @@ function validateInput(value) {
 	}
 }
 
-// promptUserPurchase will prompt the user for the item/quantity they would like to purchase
+// Prompt user purchase
 function promptUserPurchase() {
 	// console.log('ENTER promptUserPurchase');
 
-	// Prompt the user to select an item
+	// Inquirer prompt
 	inquirer.prompt([
 		{
 			type: 'input',
@@ -56,7 +56,7 @@ function promptUserPurchase() {
 		var item = input.item_id;
 		var quantity = input.quantity;
 
-		// Query db to confirm that the given item ID exists in the desired quantity
+		// Query for inventory
 		var queryStr = 'SELECT * FROM products WHERE ?';
 
 		connection.query(queryStr, {item_id: item}, function(err, data) {
@@ -75,7 +75,7 @@ function promptUserPurchase() {
 				// console.log('productData = ' + JSON.stringify(productData));
 				// console.log('productData.stock_quantity = ' + productData.stock_quantity);
 
-				// If the quantity requested by the user is in stock
+				// If quanity is out
 				if (quantity <= productData.stock_quantity) {
 					console.log('Congratulations, the product you requested is in stock! Placing order!');
 
@@ -83,7 +83,7 @@ function promptUserPurchase() {
 					var updateQueryStr = 'UPDATE products SET stock_quantity = ' + (productData.stock_quantity - quantity) + ' WHERE item_id = ' + item;
 					// console.log('updateQueryStr = ' + updateQueryStr);
 
-					// Update the inventory
+					// Updates the inventory
 					connection.query(updateQueryStr, function(err, data) {
 						if (err) throw err;
 
@@ -91,7 +91,7 @@ function promptUserPurchase() {
 						console.log('Thank you for shopping with us!');
 						console.log("\n---------------------------------------------------------------------\n");
 
-						// End the database connection
+						// End 
 						connection.end();
 					})
 				} else {
@@ -106,14 +106,14 @@ function promptUserPurchase() {
 	})
 }
 
-// displayInventory will retrieve the current inventory from the database and output it to the console
+// Current inventory
 function displayInventory() {
 	// console.log('___ENTER displayInventory___');
 
-	// Construct the db query string
+	// Construct the string
 	queryStr = 'SELECT * FROM products';
 
-	// Make the db query
+	// Make the query
 	connection.query(queryStr, function(err, data) {
 		if (err) throw err;
 
@@ -138,11 +138,11 @@ function displayInventory() {
 	})
 }
 
-// runBamazon will execute the main application logic
-function runBamazon() {
+// Executes main
+function runbamazon() { //changed from Bamazon
 	// console.log('___ENTER runBamazon___');
 	displayInventory();
 }
 
 // Run the application logic
-runBamazon();
+runbamazon();

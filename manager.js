@@ -1,28 +1,28 @@
-// Pull in required dependencies
-var inquirer = require('inquirer');
-var mysql = require('mysql');
+// Vars
+var inquirer = require("inquirer");
+var mysql = require("mysql");
 var PORT = 3000;
 
-// Define the MySQL connection parameters
+// Connections
 var connection = mysql.createConnection({
 	host: "localhost",
 
-	// Your port; if not 3306
-	port: 3306,
+	// Port
+	port: 3000,
   
 	// Your username
 	user: "root",
   
 	// Your password
-	password: "",
+	password: "testtest",
 	database: "bamazon"
   });
 
-// promptManagerAction will present menu options to the manager and trigger appropriate logic
+// Menu options
 function promptManagerAction() {
 	// console.log('___ENTER promptManagerAction___');
 
-	// Prompt the manager to select an option
+	// Inquirer prompt
 	inquirer.prompt([
 		{
 			type: 'list',
@@ -39,7 +39,7 @@ function promptManagerAction() {
 				} else if (val === 'Add New Product') {
 					return 'newProduct';
 				} else {
-					// This case should be unreachable
+					// Error
 					console.log('ERROR: Unsupported operation!');
 					exit(1);
 				}
@@ -48,7 +48,7 @@ function promptManagerAction() {
 	]).then(function(input) {
 		// console.log('User has selected: ' + JSON.stringify(input));
 
-		// Trigger the appropriate action based on the user input
+		// Options on options, ineventory, sales and more
 		if (input.option ==='sale') {
 			displayInventory(); // Problem?
 		} else if (input.option === 'lowInventory') {
@@ -58,7 +58,7 @@ function promptManagerAction() {
 		} else if (input.option === 'newProduct') {
 			createNewProduct();
 		} else {
-			// This case should be unreachable
+			// Error
 			console.log('ERROR: Unsupported operation!');
 			exit(1);
 		}
@@ -69,16 +69,14 @@ function promptManagerAction() {
 function displayInventory() {
 	// console.log('___ENTER displayInventory___');
 
-	// Construct the db query string
+	// Construct the query
 	queryStr = 'SELECT * FROM products';
 
-	// Make the db query
-	connection.query(queryStr, function(err, data) { //error here
+	// Makes query
+	connection.query(queryStr, function(err, data) { // Ptoblem
 		if (err) throw err;
-
 		console.log('Existing Inventory: ');
 		console.log('...................\n');
-
 		var strOut = '';
 		for (var i = 0; i < data.length; i++) {
 			strOut = '';
@@ -93,19 +91,19 @@ function displayInventory() {
 
 	  	console.log("---------------------------------------------------------------------\n");
 
-		// End the database connection
+		// End connection
 		connection.end();
 	})
 }
 
-// displayLowInventory will display a list of products with the available quantity below 100
+// Dispaly low inventory
 function displayLowInventory() {
 	// console.log('___ENTER displayLowInventory');
 
-	// Construct the db query string
+	// Construct the query string
 	queryStr = 'SELECT * FROM products WHERE stock_quantity < 100';
 
-	// Make the db query
+	// Make the query
 	connection.query(queryStr, function(err, data) {
 		if (err) throw err;
 
@@ -126,12 +124,12 @@ function displayLowInventory() {
 
 	  	console.log("---------------------------------------------------------------------\n");
 
-		// End the database connection
+		// End 
 		connection.end();
 	})
 }
 
-// validateInteger makes sure that the user is supplying only positive integers for their inputs
+// Values
 function validateInteger(value) {
 	var integer = Number.isInteger(parseFloat(value));
 	var sign = Math.sign(value);
@@ -143,7 +141,7 @@ function validateInteger(value) {
 	}
 }
 
-// validateNumeric makes sure that the user is supplying only positive numbers for their inputs
+// Only positive numbers here
 function validateNumeric(value) {
 	// Value must be a positive number
 	var number = (typeof parseFloat(value)) === 'number';
@@ -160,7 +158,7 @@ function validateNumeric(value) {
 function addInventory() {
 	// console.log('___ENTER addInventory___');
 
-	// Prompt the user to select an item
+	// Prompts user selection
 	inquirer.prompt([
 		{
 			type: 'input',
@@ -182,7 +180,7 @@ function addInventory() {
 		var item = input.item_id;
 		var addQuantity = input.quantity;
 
-		// Query db to confirm that the given item ID exists and to determine the current stock_count
+		// Query database
 		var queryStr = 'SELECT * FROM products WHERE ?';
 
 		connection.query(queryStr, {item_id: item}, function(err, data) {
@@ -203,7 +201,7 @@ function addInventory() {
 
 				console.log('Updating Inventory...');
 
-				// Construct the updating query string
+				// Updating query string
 				var updateQueryStr = 'UPDATE products SET stock_quantity = ' + (productData.stock_quantity + addQuantity) + ' WHERE item_id = ' + item;
 				// console.log('updateQueryStr = ' + updateQueryStr);
 
